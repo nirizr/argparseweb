@@ -33,7 +33,7 @@ class WebuiPage(object):
 
   function update_optional(checkbox, optional_name, force_check)
   {
-    if (force_check === true)
+    if (force_check === true && checkbox.checked == false)
     {
       checkbox.checked = true;
     }
