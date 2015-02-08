@@ -1,6 +1,6 @@
 # README #
 
-This web.py based simple module allows you to automatically set up a simple HTTP web server out of advanced argparse.ArgumentParser and similar (argh.ArgumentParser) objects.
+This web.py based simple module allows you to automatically set up a simple HTTP web server out of advanced `argparse.ArgumentParser` objects and similar (`argh.ArgumentParser`) ones.
 Using this on top of argh lets you automatically generate web user interface out of simple functions defined in your application.
 This package was made for getting your personal command line scripts to the next stage - internal shared utilities.
 
@@ -10,7 +10,7 @@ For a production like setup you'll need:
 
 1. make your main script expose an application global object by calling webui.Webui.wsgi() method
 
-2. modify index.wsgi to fit your application (trivial configuration, import aforementioned application)
+2. modify `index.wsgi` to fit your application (trivial configuration, import aforementioned application)
 
 3. set up a wsgi supporting apache (or any other) server 
 
@@ -18,7 +18,7 @@ For debugging like setup you'll need (but since it's used for internal tools, th
 
 1. run the original command line tool
 
-2. instead of methods like argparse.ArgumentParser.parse_args() or argh.dispatch(), you'll simply need to call webui.WebUI.dispatch() which will create a web.py development application.
+2. instead of methods like `argparse.ArgumentParser.parse_args()` or `argh.dispatch()`, you'll simply need to call `webui.WebUI.dispatch()` which will create a web.py development application.
 
 ### example working snippet ###
 
