@@ -45,10 +45,10 @@ def main():
   # remove it as let webui handle the rest
   if sys.argv[1] == '--webui':
     sys.argv.remove('--webui')
-    cmd_parser = webui.Webui(cmd_parser) # second mode of operation - development/fast setup
-
-  # dispatch either webui or argh
-  cmd_parser.dispatch() # first mode of operation - regular command line
+    webui.Webui(cmd_parser).dispatch() # second mode of operation - development/fast setup
+  else:
+    # dispatch either webui or argh
+    cmd_parser.dispatch() # first mode of operation - regular command line
 
 def wsgi():
   global application
