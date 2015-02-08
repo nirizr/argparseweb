@@ -4,7 +4,7 @@ This web.py based simple module allows you to automatically set up a simple HTTP
 Using this on top of argh lets you automatically generate web user interface out of simple functions defined in your application.
 This package was made for getting your personal command line scripts to the next stage - internal shared utilities.
 
-### How do I get set up? ###
+### How do I set up? ###
 
 For a production like setup you'll need:
 
@@ -90,8 +90,3 @@ from myapp import application
 * right now vary-length arguments (nargs='?', nargs='*', nargs='+') are limited to  one argument because i didn't write the HTML required for that. i'm considering multiple text inputs or textarea with line separation, input (and code) are most welcome.
 * some code reordering is needed (split template to another file - it's grown quite big, handle action parameters better - shouldn't pass everything as html attributes although it's comfortable)
 * smoother integration into existing code.
-
-
-### Who do I talk to? ###
-
-* Repo owner or admin
