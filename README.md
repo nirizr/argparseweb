@@ -22,7 +22,7 @@ For debugging like setup you'll need (but since it's used for internal tools, th
 
 ### example working snippet ###
 
-This snippet includes three modes of operations:
+This snippet includes three modes of operation for the webui utility:
 
 1. first and simplest: dispatch methods using argh's automatic function to command line parser facilities, this is completely unrelated to webui and that way you won't lose existing command line usage ability.
 
