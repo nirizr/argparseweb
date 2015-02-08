@@ -26,8 +26,11 @@ This snippet includes three modes of operations:
 
 1. first and simplest: dispatch methods using argh's automatic function to command line parser facilities, this is completely unrelated to webui and that way you won't lose existing command line usage ability.
 
-2. getting `--webui` as the first command line argument, sets up a development web server (defaults to *:8080) and provides the 
+2. getting `--webui` as the first command line argument, sets up a development web server (defaults to *:8080) and is ready to use.
 
+3. exposing an `application` global object that supports the wsgi interface. once you point a browser with correct wsgi configuration (was a bit of a pain for me first time) it'll work like magic :)
+
+myapp.py:
 ```
 #!python
 def get_parser():
@@ -66,7 +69,21 @@ else:
   # in wsgi mode
   wsgi()
 ```
+index.wsgi:
+```
+#!python
+# TODO: replace with your application path
+# i found now way to get it automatically in wsgi :/
+APP_DIR = '/var/www/myapp'
 
+import sys, os
+sys.path.insert(0, APP_DIR)
+os.chdir(APP_DIR)
+
+from myapp import application
+~
+
+```
 
 ### known issues ###
 
