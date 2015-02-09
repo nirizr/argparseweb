@@ -197,21 +197,19 @@ $for input in form.inputs:
     old_stderr = None
     old_stdout = None
     try:
-      #sys.stderr, old_stderr = stderr, sys.stderr
-      #sys.stdout, old_stdout = stdout, sys.stdout
+      sys.stderr, old_stderr = stderr, sys.stderr
+      sys.stdout, old_stdout = stdout, sys.stdout
       if hasattr(self._parser, 'dispatch'):
         result = self._parser.dispatch(argv=argv, output_file=stdout, errors_file=stderr)
       else:
         result = self._parser.parse_args(args=argv)
-    except:
-      print(stdout.getvalue())
-      print(stderr.getvalue())
-      raise
     finally:
       if old_stderr:
         sys.stderr = old_stderr
       if old_stdout:
         sys.stdout = old_stdout
+    print(stdout.getvalue())
+    print(stderr.getvalue())
 
     return "Running: {}\nErrors: {}\nResult: {}\nOutput:\n{}".format(argv, stderr.getvalue(), result, stdout.getvalue())
 
@@ -271,7 +269,6 @@ $for input in form.inputs:
 
     input_type = web.form.Textbox
 
-    # TODO: choices should be updated somehow. i.e. when a command creates a new dataframe, that dataframe should be updated in the list of available choices.
     if action.choices:
       input_type = web.form.Dropdown
       input_parameters['args'] = [choice for choice in action.choices]
