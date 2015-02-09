@@ -4,7 +4,7 @@ This web.py based simple module allows you to automatically set up a simple HTTP
 Using this on top of argh lets you automatically generate web user interface out of simple functions defined in your application.
 This package was made for getting your personal command line scripts to the next stage - internal shared utilities.
 
-### How do I get set up? ###
+### How do I set up? ###
 
 For a production like setup you'll need:
 
@@ -22,12 +22,15 @@ For debugging like setup you'll need (but since it's used for internal tools, th
 
 ### example working snippet ###
 
-This snippet includes three modes of operations:
+This snippet includes three modes of operation for the webui utility:
 
 1. first and simplest: dispatch methods using argh's automatic function to command line parser facilities, this is completely unrelated to webui and that way you won't lose existing command line usage ability.
 
-2. getting `--webui` as the first command line argument, sets up a development web server (defaults to *:8080) and provides the 
+2. getting `--webui` as the first command line argument, sets up a development web server (defaults to *:8080) and is ready to use.
 
+3. exposing an `application` global object that supports the wsgi interface. once you point a browser with correct wsgi configuration (was a bit of a pain for me first time) it'll work like magic :)
+
+myapp.py:
 ```
 #!python
 def get_parser():
@@ -66,15 +69,24 @@ else:
   # in wsgi mode
   wsgi()
 ```
+index.wsgi:
+```
+#!python
+# TODO: replace with your application path
+# i found now way to get it automatically in wsgi :/
+APP_DIR = '/var/www/myapp'
 
+import sys, os
+sys.path.insert(0, APP_DIR)
+os.chdir(APP_DIR)
+
+from myapp import application
+~
+
+```
 
 ### known issues ###
 
 * right now vary-length arguments (nargs='?', nargs='*', nargs='+') are limited to  one argument because i didn't write the HTML required for that. i'm considering multiple text inputs or textarea with line separation, input (and code) are most welcome.
 * some code reordering is needed (split template to another file - it's grown quite big, handle action parameters better - shouldn't pass everything as html attributes although it's comfortable)
 * smoother integration into existing code.
-
-
-### Who do I talk to? ###
-
-* Repo owner or admin
