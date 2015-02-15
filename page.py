@@ -199,10 +199,11 @@ $for input in form.inputs:
     try:
       sys.stderr, old_stderr = stderr, sys.stderr
       sys.stdout, old_stdout = stdout, sys.stdout
-      if hasattr(self._parser, 'dispatch'):
-        result = self._parser.dispatch(argv=argv, output_file=stdout, errors_file=stderr)
+      if self._dispatch:
+        self._parser.dispatch(argv=argv, output_file=stdout, errors_file=stderr)
       else:
         result = self._parser.parse_args(args=argv)
+        raise WebuiResultException(result)
     finally:
       if old_stderr:
         sys.stderr = old_stderr
