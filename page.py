@@ -209,7 +209,6 @@ $for input in form.inputs:
         sys.stderr = old_stderr
       if old_stdout:
         sys.stdout = old_stdout
-    print(stdout.getvalue())
     print(stderr.getvalue())
 
     return "Running: {}\nErrors: {}\nResult: {}\nOutput:\n{}".format(argv, stderr.getvalue(), result, stdout.getvalue())
