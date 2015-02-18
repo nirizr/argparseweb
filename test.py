@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import sys
 
 import webui
 
@@ -21,4 +22,14 @@ parser.add_argument('--bar', type=int, nargs=2, metavar=('bar', 'baz'))
 
 w = webui.Webui(parser)
 
-w.dispatch()
+mode = sys.argv.pop()
+if mode == "dispatch":
+  def p(webpage, arg):
+    print(arg)
+
+  w.dispatch(p)
+elif mode == "get":
+  for r in w.get():
+    print(r)
+elif mode == "getone":
+  print(w.getone())

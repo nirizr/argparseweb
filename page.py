@@ -10,6 +10,8 @@ import argh
 
 class WebuiPage(object):
   _parser = None
+  _dispatch = None
+  _parsed = True
   _form_template = web.template.frender("templates/input.html", globals={'type': type})
 
   def __init__(self):
@@ -72,9 +74,8 @@ class WebuiPage(object):
       elif form[action_id].attrs.get('disposition') == 'positional':
         self.parsable_add_value(pos_argv, form[action_id])
 
-    argv = pos_argv + opt_argv
-    print(argv)
-    # TODO: handle "parse_args" usage cases, inc. returning a prased ops object
+    arg = pos_argv + opt_argv
+    print(arg)
 
     stdout = StringIO.StringIO()
     stderr = StringIO.StringIO()
@@ -83,11 +84,9 @@ class WebuiPage(object):
     try:
       sys.stderr, old_stderr = stderr, sys.stderr
       sys.stdout, old_stdout = stdout, sys.stdout
-      if self._dispatch:
-        self._parser.dispatch(argv=argv, output_file=stdout, errors_file=stderr)
-      else:
-        result = self._parser.parse_args(args=argv)
-        raise WebuiResultException(result)
+      if self._parsed:
+        arg = self._parser.parse_args(args=arg)
+      result = self._dispatch(arg)
     finally:
       if old_stderr:
         sys.stderr = old_stderr
