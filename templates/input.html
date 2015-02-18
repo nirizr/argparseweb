@@ -1,0 +1,116 @@
+$def with (form)
+<html>
+<head>
+  <script type="text/javascript">
+  function update_show(selector)
+  {
+    document.getElementById('table').className = 'showbase show'+selector.value;
+    elements = document.getElementById('form').elements;
+    for (var i=0; i < elements.length; i++)
+    {
+      element = elements[i];
+      if (element.className != '')
+      {
+        element.disabled = element.className != selector.value;
+      }
+    }
+    $for input in form.inputs:
+      $if input.attrs.get('disposition') == "optional" and input.attrs.get('nargs') != 0:
+        update_optional(document.getElementById('$(input.name)_option'), '$input.name');
+  }
+
+  function update_optional(checkbox, optional_name, force_check)
+  {
+    if (force_check === true && checkbox.checked == false)
+    {
+      checkbox.checked = true;
+    }
+
+    elements = document.getElementsByName(optional_name);
+    for (var i=0; i < elements.length; i++)
+    {
+      obj = elements[i];
+      if (checkbox.checked && !checkbox.disabled)
+      {
+        obj.disabled = false;
+        if (obj.value == obj.getAttribute('default'))
+        {
+          obj.value = obj.defaultValue;
+        }
+      }
+      else
+      {
+        obj.disabled = true;
+        if (obj.value == obj.defaultValue)
+        {
+          obj.value = obj.getAttribute('default');
+        }
+      }
+    }
+  }
+
+  function update_onload()
+  {
+    $for input in form.inputs:
+      $if input.attrs.get('subparser') == "true":
+        update_show(document.getElementsByName('$input.name')[0]);
+    $for input in form.inputs:
+      $if input.attrs.get('disposition') == "optional" and input.attrs.get('nargs') != 0:
+        update_optional(document.getElementById('$(input.name)_option'), '$input.name');
+  }
+  </script>
+  <style type="text/css">
+  table tr { display:none; }
+  $ classes = set(input.attrs.get('class') for input in form.inputs)
+  $for c in classes:
+    $if (c == '') : $ c = 'base'
+    Table.show$c tr.$c {display:table-row; }
+  </style>
+</head>
+<body onload="javascript: update_onload();">
+<form id="form" method="post">
+$if not form.valid:
+  <p class="error">Error(s):
+    <ul>
+    $if form.note: <li>$:form.note</li>
+    $for input in form.inputs:
+      $if input.note:
+        <li>$:input.note</li>
+    </ul>
+  </p>
+<table border=1 class="showbase" id="table">
+$for input in form.inputs:
+  $ nargs = input.attrs.get('nargs')
+  $ c = (input.attrs.get('class') if input.attrs.get('class') else 'base')
+  $ option_checkbox = input.attrs.get('disposition') == "optional" and nargs != 0
+  $if nargs and (type(nargs) == int or nargs.isdigit()) and int(nargs) > 1:
+    $ input_count = int(nargs)
+  $else:
+    $ input_count = 1
+  <tr class="$c">
+    <th>
+    $if option_checkbox:
+      <input type="checkbox" id="$(input.name)_option" class="$input.attrs.get('class')" onchange="javascript: update_optional(this, '$input.name');" />
+    $input.description
+    </th>
+    $if option_checkbox:
+      <td onclick="javascript: update_optional(document.getElementById('$(input.name)_option'), '$(input.name)', true);">
+    $else:
+      <td>
+    $for i in range(input_count):
+      $:input.render()
+    </td>
+  </tr>
+  $if input.attrs.get('help'):
+    <tr class="$c">
+      <td colspan=2>
+        $input.attrs.get('help')
+      </td>
+    </tr>
+<tr class="base">
+  <th colspan=2><input type=submit value=Submit /></th>
+</tr>
+</table>
+</form>
+</body>
+</html>
