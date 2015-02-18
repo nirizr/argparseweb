@@ -85,6 +85,8 @@ from myapp import application
 
 ```
 
+More examples are at `test.py`
+
 ### known issues ###
 
 * right now vary-length arguments (nargs='?', nargs='*', nargs='+') are limited to  one argument because i didn't write the HTML required for that. i'm considering multiple text inputs or textarea with line separation, input (and code) are most welcome.
