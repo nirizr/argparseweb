@@ -1,4 +1,5 @@
 # builtin
+import os
 import sys
 import cStringIO as StringIO
 import argparse
@@ -12,7 +13,7 @@ class WebuiPage(object):
   _parser = None
   _dispatch = None
   _parsed = True
-  _form_template = web.template.frender("templates/input.html", globals={'type': type})
+  _form_template = web.template.frender(os.path.join(os.path.dirname(__file__), "templates/input.html"), globals={'type': type})
 
   def __init__(self):
     self._actions = collections.OrderedDict()

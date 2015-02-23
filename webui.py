@@ -11,8 +11,6 @@ class Webui(object):
   def get_urls(self):
     return ('/', 'index')
 
-  def get_classes(self, dispatch, parsed=False):
-
   def app(self, dispatch, parsed):
     class WebuiPageWrapper(page.WebuiPage):
       _parser = self._parser
