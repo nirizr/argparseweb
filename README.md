@@ -42,7 +42,7 @@ def get_parser():
 
   return cmd_parser
 
-def main():
+def main_1():
   # k. get the parser as usual
   cmd_parser = get_parser()
 
@@ -54,6 +54,17 @@ def main():
   else:
     # dispatch either webui or argh
     cmd_parser.dispatch() # first mode of operation - regular command line
+
+def main_2():
+  parser = argparse.ArgumentParser()
+
+  # TODO: fill argparse
+
+  opts = webui,Webui(parser).getonce()
+
+  # TODO: user opts as you would with any ArgumentParser generated namespace,
+  # opts is really a namespace object directly created by parser, and webui only compiled an argument sequence
+  # based on the filled form, passed into parser.parse_args() and back to you
 
 def wsgi():
   global application
