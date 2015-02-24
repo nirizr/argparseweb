@@ -83,7 +83,6 @@ sys.path.insert(0, APP_DIR)
 os.chdir(APP_DIR)
 
 from myapp import application
-~
 
 ```
 
