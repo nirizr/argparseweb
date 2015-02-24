@@ -17,7 +17,9 @@ For a production like setup you'll need:
 For debugging like setup you'll need (but since it's used for internal tools, this might also be fine):
 
 1. replace methods like `argparse.ArgumentParser.parse_args()` or `argh.dispatch()` with `webui.Webui.getonce()` or `webui.Webui.dispatch()` respectively.
+
 `dispatch()` will instantiate a web service and call dispatch methods (either provided by the user - you - or dispatch methods of supporting argument parsers like `argh`)
+
 `get()` and `getonce()` wrap the `dispatch()` method and yield results as they are submitted in the web form, providing an interface that resembles the `parse_args()` method.
 
 ### example working snippet ###
