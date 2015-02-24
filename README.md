@@ -60,7 +60,8 @@ def main_2():
 
   # TODO: fill argparse
 
-  opts = webui,Webui(parser).getonce()
+  # opts = parser.parse_args()
+  opts = webui.Webui(parser).getonce()
 
   # TODO: user opts as you would with any ArgumentParser generated namespace,
   # opts is really a namespace object directly created by parser, and webui only compiled an argument sequence
