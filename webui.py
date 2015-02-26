@@ -22,19 +22,18 @@ class Webui(object):
 
     return web.application(urls, classes)
 
-  def dispatch(self, dispatch=None, parsed=True):
+  def dispatch(self, dispatch=None, parsed=False):
     # Make sure we get an argh-like object here that has a dispatch object
-    if not dispatch and hasattr(self._parser, 'dispatch'):
+    if dispatch is None and hasattr(self._parser, 'dispatch'):
       dispatch = self._parser.dispatch
-      parsed = False
 
-    if not dispatch:
+    if dispatch is None:
       raise ValueError("Can't dispatch a non dispatchable parser without a dispatch method")
 
-    self.app(dispatch, parsed).run()
+    self.app(dispatch=dispatch, parsed=parsed).run()
 
   def wsgi(self, dispatch=None, parsed=True):
-    return self.app(dispatch, parsed).wsgifunc()
+    return self.dispatch(dispatch, parsed).wsgifunc()
 
   def get(self, count=True):
     # prepare a process-safe queue to hold all results
