@@ -95,7 +95,7 @@ class WebuiPage(object):
         sys.stdout = old_stdout
     print(stderr.getvalue())
 
-    return "Running: {}\nErrors: {}\nResult: {}\nOutput:\n{}".format(argv, stderr.getvalue(), result, stdout.getvalue())
+    return "Running: {}\nErrors: {}\nResult: {}\nOutput:\n{}".format(arg, stderr.getvalue(), result, stdout.getvalue())
 
 #class WebuiParser(argh.ArghParser):
 #  def __init__(self, *args, **kwargs):
