@@ -16,9 +16,11 @@ For a production like setup you'll need:
 
 For debugging like setup you'll need (but since it's used for internal tools, this might also be fine):
 
-1. run the original command line tool
+1. replace methods like `argparse.ArgumentParser.parse_args()` or `argh.dispatch()` with `webui.Webui.getone()` or `webui.Webui.dispatch()` respectively.
 
-2. instead of methods like `argparse.ArgumentParser.parse_args()` or `argh.dispatch()`, you'll simply need to call `webui.WebUI.dispatch()` which will create a web.py development application.
+`dispatch()` will instantiate a web service and call dispatch methods (either provided by the user - you - or dispatch methods of supporting argument parsers like `argh`)
+
+`get()` and `getone()` wrap the `dispatch()` method and yield results as they are submitted in the web form, providing an interface that resembles the `parse_args()` method.
 
 ### example working snippet ###
 
@@ -40,7 +42,7 @@ def get_parser():
 
   return cmd_parser
 
-def main():
+def main_1():
   # k. get the parser as usual
   cmd_parser = get_parser()
 
@@ -52,6 +54,18 @@ def main():
   else:
     # dispatch either webui or argh
     cmd_parser.dispatch() # first mode of operation - regular command line
+
+def main_2():
+  parser = argparse.ArgumentParser()
+
+  # TODO: fill argparse
+
+  # opts = parser.parse_args()
+  opts = webui.Webui(parser).getone()
+
+  # TODO: use opts as you would with any ArgumentParser generated namespace,
+  # opts is really a namespace object directly created by parser, and webui only compiled an argument sequence
+  # based on the filled form, passed into parser.parse_args() and back to you
 
 def wsgi():
   global application
@@ -81,7 +95,6 @@ sys.path.insert(0, APP_DIR)
 os.chdir(APP_DIR)
 
 from myapp import application
-~
 
 ```
 
