@@ -12,6 +12,13 @@ class Webui(object):
     return ('/', 'index')
 
   def app(self, dispatch, parsed):
+    # Make sure we get an argh-like object here that has a dispatch object
+    if dispatch is None:
+      if not hasattr(self._parser, 'dispatch'):
+        raise ValueError("Can't dispatch a non dispatchable parser without a dispatch method")
+      dispatch = self._parser.dispatch
+      parsed = False
+
     class WebuiPageWrapper(page.WebuiPage):
       _parser = self._parser
       _dispatch = dispatch
@@ -23,17 +30,10 @@ class Webui(object):
     return web.application(urls, classes)
 
   def dispatch(self, dispatch=None, parsed=False):
-    # Make sure we get an argh-like object here that has a dispatch object
-    if dispatch is None and hasattr(self._parser, 'dispatch'):
-      dispatch = self._parser.dispatch
-
-    if dispatch is None:
-      raise ValueError("Can't dispatch a non dispatchable parser without a dispatch method")
-
     self.app(dispatch=dispatch, parsed=parsed).run()
 
   def wsgi(self, dispatch=None, parsed=True):
-    return self.dispatch(dispatch, parsed).wsgifunc()
+    return self.app(dispatch, parsed).wsgifunc()
 
   def get(self, count=True):
     # prepare a process-safe queue to hold all results
