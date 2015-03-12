@@ -2,6 +2,33 @@ $def with (form)
 <html>
 <head>
   <script type="text/javascript">
+  function update_optionals()
+  {
+    $for input in form.inputs:
+      $if input.disposition == "optional" and input.nargs != 0:
+        update_optional('$input.id');
+  }
+
+  function hack_getElementsById(id)
+  {
+    elements = [];
+
+    first = document.getElementById(id)
+    name = first.name;
+
+    opts = document.getElementsByName(name);
+    for (i = 0; i < opts.length; i++)
+    {
+      opt = opts[i];
+      if (opt.id != id)
+        continue;
+
+      elements.push(opt);
+    }
+
+    return elements;
+  }
+
   function update_show(selector)
   {
     document.getElementById('table').className = 'showbase show'+selector.value;
@@ -14,36 +41,35 @@ $def with (form)
         element.disabled = element.className != selector.value;
       }
     }
-    $for input in form.inputs:
-      $if input.attrs.get('disposition') == "optional" and input.attrs.get('nargs') != 0:
-        update_optional(document.getElementById('$(input.name)_option'), '$input.name');
+    update_optionals();
   }
 
-  function update_optional(checkbox, optional_name, force_check)
+  function update_optional(optional_id, force_check)
   {
+    checkbox=document.getElementById(optional_id+'_checkbox')
     if (force_check === true && checkbox.checked == false)
     {
       checkbox.checked = true;
     }
 
-    elements = document.getElementsByName(optional_name);
-    for (var i=0; i < elements.length; i++)
+    elements = hack_getElementsById(optional_id);
+    for (i = 0; i < elements.length ; i++)
     {
-      obj = elements[i];
+      element = elements[i]
       if (checkbox.checked && !checkbox.disabled)
       {
-        obj.disabled = false;
-        if (obj.value == obj.getAttribute('default'))
+        element.disabled = false;
+        if (element.value == element.getAttribute('default'))
         {
-          obj.value = obj.defaultValue;
+          element.value = element.defaultValue;
         }
       }
       else
       {
-        obj.disabled = true;
-        if (obj.value == obj.defaultValue)
+        element.disabled = true;
+        if (element.value == element.defaultValue)
         {
-          obj.value = obj.getAttribute('default');
+          element.value = element.getAttribute('default');
         }
       }
     }
@@ -52,11 +78,9 @@ $def with (form)
   function update_onload()
   {
     $for input in form.inputs:
-      $if input.attrs.get('subparser') == "true":
+      $if input.subparser:
         update_show(document.getElementsByName('$input.name')[0]);
-    $for input in form.inputs:
-      $if input.attrs.get('disposition') == "optional" and input.attrs.get('nargs') != 0:
-        update_optional(document.getElementById('$(input.name)_option'), '$input.name');
+    update_optionals();
   }
   </script>
   <style type="text/css">
@@ -80,9 +104,9 @@ $if not form.valid:
   </p>
 <table border=1 class="showbase" id="table">
 $for input in form.inputs:
-  $ nargs = input.attrs.get('nargs')
+  $ nargs = input.nargs
   $ c = (input.attrs.get('class') if input.attrs.get('class') else 'base')
-  $ option_checkbox = input.attrs.get('disposition') == "optional" and nargs != 0
+  $ option_checkbox = input.disposition == "optional" and nargs != 0
   $if nargs and (type(nargs) == int or nargs.isdigit()) and int(nargs) > 1:
     $ input_count = int(nargs)
   $else:
@@ -90,21 +114,21 @@ $for input in form.inputs:
   <tr class="$c">
     <th>
     $if option_checkbox:
-      <input type="checkbox" id="$(input.name)_option" class="$input.attrs.get('class')" onchange="javascript: update_optional(this, '$input.name');" />
+      <input type="checkbox" id="$(input.id)_checkbox" class="$input.attrs.get('class')" onchange="javascript: update_optional('$input.id');" />
     $input.description
     </th>
     $if option_checkbox:
-      <td onclick="javascript: update_optional(document.getElementById('$(input.name)_option'), '$(input.name)', true);">
+      <td onclick="javascript: update_optional('$(input.id)', true);">
     $else:
       <td>
     $for i in range(input_count):
       $:input.render()
     </td>
   </tr>
-  $if input.attrs.get('help'):
+  $if input.help:
     <tr class="$c">
       <td colspan=2>
-        $input.attrs.get('help')
+        $input.help
       </td>
     </tr>
 <tr class="base">

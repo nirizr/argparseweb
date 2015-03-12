@@ -35,7 +35,7 @@ class WebuiPage(object):
     return False
 
   def parsable_add_value(self, argv, i):
-    nargs = i.attrs.get('nargs')
+    nargs = i.nargs
     if nargs == 0:
       pass
     elif self.multiple_args(nargs):
@@ -68,11 +68,11 @@ class WebuiPage(object):
       if not action_id in form.value.keys():
         continue
 
-      if form[action_id].attrs.get('disposition') == 'optional':
+      if form[action_id].disposition == 'optional':
         arg_name = "--" + action_id
         opt_argv.append(arg_name)
         self.parsable_add_value(opt_argv, form[action_id])
-      elif form[action_id].attrs.get('disposition') == 'positional':
+      elif form[action_id].disposition == 'positional':
         self.parsable_add_value(pos_argv, form[action_id])
 
     arg = pos_argv + opt_argv
@@ -109,14 +109,20 @@ class WebuiPage(object):
         base_id = opt_name
     if base_id == argparse.SUPPRESS:
       base_id = "command"
-    return base_id
+    return base_id.lstrip('-')
 
-  def get_id(self, action):
-    return self.get_base_id(action).lstrip('-')
+  def get_class(self, prefix):
+    return "_".join(prefix) if prefix else ""
+
+  def get_id(self, action, prefix):
+    return self.get_class(prefix+[self.get_base_id(action)])
 
   def get_name(self, action):
+    return self.get_base_id(action)
+
+  def get_description(self, action):
     base_id = self.get_base_id(action)
-    base_id = base_id.replace('_', ' ').replace('-', ' ').strip()
+    base_id = base_id.replace('_', ' ').replace('-', ' ')
     return base_id[0].upper() + base_id[1:]
 
   def get_nargs(self, action):
@@ -135,6 +141,15 @@ class WebuiPage(object):
       return ""
     return action.help % action.__dict__
 
+  def get_disposition(self, action):
+    if len(action.option_strings):
+      return "optional"
+    else:
+      return "positional"
+
+  def get_subparser(self, action):
+    return isinstance(action, argparse._SubParsersAction)
+
   def filter_input_object(self, action):
     if isinstance(action, argparse._VersionAction):
       return True
@@ -145,17 +160,15 @@ class WebuiPage(object):
   # TODO: maybe this function should move to be near the opposite in webuipage.POST
   def get_input_object(self, action, prefix):
     input_parameters = {}
-    input_parameters['class'] = "_".join(prefix) if prefix else ""
-    input_parameters['name'] = self.get_id(action)
-    input_parameters['description'] = self.get_name(action)
-    input_parameters['nargs'] = self.get_nargs(action)
-    input_parameters['help'] = self.get_help(action)
+    input_parameters['class'] = self.get_class(prefix)
+    input_parameters['name'] = self.get_name(action)
+    input_parameters['id'] = self.get_id(action, prefix)
 
     input_type = web.form.Textbox
 
     if action.choices:
       input_type = web.form.Dropdown
-      input_parameters['args'] = [choice for choice in action.choices]
+      #input_parameters['args'] = [choice for choice in action.choices]
       if action.nargs:
         if action.nargs == '*' or action.nargs == '+' or (action.nargs.isdigit() and int(action.nargs) > 1):
           input_parameters['multiple'] = 'multiple'
@@ -168,30 +181,26 @@ class WebuiPage(object):
       input_parameters['value'] = action.default if action.default else ""
 
     if isinstance(action, argparse._SubParsersAction):
-      input_parameters['subparser'] = "true"
       input_parameters['onChange'] = "javascript: update_show(this);"
       input_parameters['value'] = action.choices.keys()[0]
 
     if len(action.option_strings):
-      input_parameters['disposition'] = "optional"
       input_parameters['default'] = action.default
       # if optional argument may be present with either 1 or no parameters, the default shifts
       # to being the no parameter's value. this is mearly to properly display actual values to the user
       if action.nargs == '?':
         ipnut_parameters['value'] = action.const
-    else:
-      input_parameters['disposition'] = "positional"
       
-    # TODO: add validators for this
-    # TODO: add java validators in web form
-    if action.type == int:
-      input_parameters['validation_type'] = "int"
-    if action.type == float:
-      input_parameters['validation_type'] = "float"
-
     # TODO: support these actions: append, append_const, count
-    self._actions[self.get_id(action)] = action
+    self._actions[self.get_id(action, prefix)] = action
     input_object = input_type(**input_parameters)
+
+    input_object.description = self.get_description(action)
+    input_object.nargs = self.get_nargs(action)
+    input_object.help = self.get_help(action)
+    input_object.disposition = self.get_disposition(action)
+    input_object.subparser = self.get_subparser(action)
+
     return input_object
 
   def get_form_inputs(self, parser=None, prefix=[]):
