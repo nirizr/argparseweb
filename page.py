@@ -43,8 +43,11 @@ class WebuiPage(object):
       argv.append(value)
 
   def get_input(self, form):
-    for key, value in form.value.items():
-      action = self._actions[key]
+    for action_id, action in self._actions.items():
+      if not action_id in form.value:
+        continue
+
+      value = form.value[action_id]
       yield action, value
 
   def POST(self):
@@ -71,7 +74,9 @@ class WebuiPage(object):
         action_name = self.get_name(action)
         arg_name = "--" + action_name
         opt_argv.append(arg_name)
-      self.parsable_add_value(pos_argv, action, value)
+        self.parsable_add_value(opt_argv, action, value)
+      elif self.get_disposition(action) == 'positional':
+        self.parsable_add_value(pos_argv, action, value)
 
     arg = pos_argv + opt_argv
     print(arg)
