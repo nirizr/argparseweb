@@ -9,26 +9,6 @@ $def with (form)
         update_optional('$input.id');
   }
 
-  function hack_getElementsById(id)
-  {
-    elements = [];
-
-    first = document.getElementById(id)
-    name = first.name;
-
-    opts = document.getElementsByName(name);
-    for (i = 0; i < opts.length; i++)
-    {
-      opt = opts[i];
-      if (opt.id != id)
-        continue;
-
-      elements.push(opt);
-    }
-
-    return elements;
-  }
-
   function update_show(selector)
   {
     document.getElementById('table').className = 'showbase show'+selector.value;
@@ -52,7 +32,7 @@ $def with (form)
       checkbox.checked = true;
     }
 
-    elements = hack_getElementsById(optional_id);
+    elements = document.getElementsByName(optional_id);
     for (i = 0; i < elements.length ; i++)
     {
       element = elements[i]

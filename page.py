@@ -34,14 +34,18 @@ class WebuiPage(object):
       return True
     return False
 
-  def parsable_add_value(self, argv, i):
-    nargs = i.nargs
-    if nargs == 0:
+  def parsable_add_value(self, argv, action, value):
+    if action.nargs == 0:
       pass
-    elif self.multiple_args(nargs):
-      argv.extend(i.value)
+    elif self.multiple_args(action.nargs):
+      argv.extend(value)
     else:
-      argv.append(i.value)
+      argv.append(value)
+
+  def get_input(self, form):
+    for key, value in form.value.items():
+      action = self._actions[key]
+      yield action, value
 
   def POST(self):
     form = self._form()
@@ -50,13 +54,11 @@ class WebuiPage(object):
       return self._form_template(form)
 
     # make sure form is filled according to input
-    # TODO: accept lists. need to derive on which parameters to do this from _parser
     defs = {}
-    #for action_id, action in self._actions.items():
-    for action_id in form.value.keys():
-      action = self._actions[action_id]
+    for action, value in self.get_input(form):
       if self.multiple_args(action.nargs):
-        defs[action_id] = []
+        action_name = self.get_name(action)
+        defs[action_name] = []
     i = web.input(**defs)
     form.fill(i)
 
@@ -64,16 +66,12 @@ class WebuiPage(object):
     pos_argv = []
     opt_argv = []
 
-    for action_id in self._actions.keys():
-      if not action_id in form.value.keys():
-        continue
-
-      if form[action_id].disposition == 'optional':
-        arg_name = "--" + action_id
+    for action, value in self.get_input(form):
+      if self.get_disposition(action) == 'optional':
+        action_name = self.get_name(action)
+        arg_name = "--" + action_name
         opt_argv.append(arg_name)
-        self.parsable_add_value(opt_argv, form[action_id])
-      elif form[action_id].disposition == 'positional':
-        self.parsable_add_value(pos_argv, form[action_id])
+      self.parsable_add_value(pos_argv, action, value)
 
     arg = pos_argv + opt_argv
     print(arg)
@@ -161,14 +159,14 @@ class WebuiPage(object):
   def get_input_object(self, action, prefix):
     input_parameters = {}
     input_parameters['class'] = self.get_class(prefix)
-    input_parameters['name'] = self.get_name(action)
+    input_parameters['name'] = self.get_id(action, prefix)
     input_parameters['id'] = self.get_id(action, prefix)
 
     input_type = web.form.Textbox
 
     if action.choices:
       input_type = web.form.Dropdown
-      #input_parameters['args'] = [choice for choice in action.choices]
+      input_parameters['args'] = [choice for choice in action.choices]
       if action.nargs:
         if action.nargs == '*' or action.nargs == '+' or (action.nargs.isdigit() and int(action.nargs) > 1):
           input_parameters['multiple'] = 'multiple'
