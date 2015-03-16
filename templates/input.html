@@ -1,6 +1,26 @@
 $def with (form)
 <html>
 <head>
+  <style>
+  table { 
+    width: 100%; 
+    border-collapse: collapse; 
+  }
+  tr.help { 
+    background: #eee; 
+  }
+  th { 
+    background: #555; 
+    color: white; 
+    font-weight: bold; 
+  }
+  td, th { 
+    padding: 6px; 
+    border: 1px solid #ccc; 
+    text-align: left; 
+  }
+  </style>
+
   <script type="text/javascript">
   function update_optionals()
   {
@@ -91,8 +111,11 @@ $for input in form.inputs:
     $ input_count = int(nargs)
   $else:
     $ input_count = 1
-  <tr class="$c">
-    <th>
+  <tr class="$c input">
+    $if input.help:
+      <th rowspan="2">
+    $else:
+      <th>
     $if option_checkbox:
       <input type="checkbox" id="$(input.id)_checkbox" class="$input.attrs.get('class')" onchange="javascript: update_optional('$input.id');" />
     $input.description
@@ -106,7 +129,7 @@ $for input in form.inputs:
     </td>
   </tr>
   $if input.help:
-    <tr class="$c">
+    <tr class="$c help">
       <td colspan=2>
         $input.help
       </td>
