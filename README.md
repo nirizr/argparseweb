@@ -22,6 +22,58 @@ For debugging like setup you'll need (but since it's used for internal tools, th
 
 `get()` and `getone()` wrap the `dispatch()` method and yield results as they are submitted in the web form, providing an interface that resembles the `parse_args()` method.
 
+### Basic examples ###
+This example will set up an http server, get one valid input, tear the http server down print a welcoming message to stdout and exit:
+```
+#!python
+
+def main():
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument("name", default="Anonymous")
+
+  # previously opts = parser.parse_args()
+  opts = webui.Webui(parser).getone():
+  print("Hello {name},\nthis is a simple example.".format(name=opts.name))
+
+if __name__ == "__main__":
+  main()
+```
+
+This example will run until stopped, printing a welcoming message for every valid input:
+```
+#!python
+def main():
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument("name", default="Anonymous")
+
+  # previously opts = parser.parse_args()
+  for opts in webui.Webui(parser).get():
+    print("Hello {name},\nthis is a simple example.".format(name=opts.name))
+
+if __name__ == "__main__":
+  main()
+```
+
+This example will print the welcoming message in the http response, sending it back to the user:
+```
+#!python
+def welcome(opts):
+  print("Hello {name},\nthis is a simple example.".format(name=opts.name))
+
+def main():
+  parser = argparse.ArgumentParser()
+
+  parser.add_argument("name", default="Anonymous")
+
+  # previously opts = parser.parse_args()
+  webui.Webui(parser).dispatch(welcome, parsed=True)
+
+if __name__ == "__main__":
+  main()
+```
+
 ### example working snippet ###
 
 This snippet includes three modes of operation for the webui utility:
