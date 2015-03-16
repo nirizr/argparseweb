@@ -74,7 +74,7 @@ if __name__ == "__main__":
   main()
 ```
 
-### example working snippet ###
+### A more complicated example ###
 
 This snippet includes three modes of operation for the webui utility:
 
