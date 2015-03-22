@@ -13,7 +13,7 @@ class WebuiPage(object):
   _parser = None
   _dispatch = None
   _parsed = True
-  _form_template = web.template.frender(os.path.join(os.path.dirname(__file__), "templates/input.html"), globals={'type': type})
+  _form_template = web.template.frender(os.path.join(os.path.dirname(__file__), "templates/input.html"), globals={'type': type, 'basestring': basestring})
 
   def __init__(self):
     self._actions = collections.OrderedDict()
@@ -47,8 +47,8 @@ class WebuiPage(object):
       if not action_id in form.value:
         continue
 
-      value = form.value[action_id]
-      yield action, value
+      value = form.d[action_id]
+      yield action_id, action, value
 
   def POST(self):
     form = self._form()
@@ -58,10 +58,9 @@ class WebuiPage(object):
 
     # make sure form is filled according to input
     defs = {}
-    for action, value in self.get_input(form):
+    for action_id, action, _ in self.get_input(form):
       if self.multiple_args(action.nargs):
-        action_name = self.get_name(action)
-        defs[action_name] = []
+        defs[action_id] = []
     i = web.input(**defs)
     form.fill(i)
 
@@ -69,7 +68,7 @@ class WebuiPage(object):
     pos_argv = []
     opt_argv = []
 
-    for action, value in self.get_input(form):
+    for _, action, value in self.get_input(form):
       if self.get_disposition(action) == 'optional':
         action_name = self.get_name(action)
         arg_name = "--" + action_name

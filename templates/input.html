@@ -44,6 +44,37 @@ $def with (form)
     update_optionals();
   }
 
+  function decrease_inputs(div_id)
+  {
+    div = document.getElementById(div_id);
+
+    count = parseInt(div.getAttribute('count'));
+    min = parseInt(div.getAttribute('min'));
+    if (count <= min)
+      return;
+
+    div.removeChild(div.lastChild);
+
+    div.setAttribute('count', count - 1);
+  }
+
+  function increase_inputs(div_id)
+  {
+    div = document.getElementById(div_id);
+
+    count = parseInt(div.getAttribute('count'));
+    max = parseInt(div.getAttribute('max'));
+    if (count >= max)
+      return;
+
+    input = div.getAttribute('input_field');
+    tmp_div = document.createElement('div');
+    tmp_div.innerHTML = input;
+    div.appendChild(tmp_div.firstChild);
+
+    div.setAttribute('count', count + 1);
+  }
+
   function update_optional(optional_id, force_check)
   {
     checkbox=document.getElementById(optional_id+'_checkbox')
@@ -105,12 +136,30 @@ $if not form.valid:
 <table border=1 class="showbase" id="table">
 $for input in form.inputs:
   $ nargs = input.nargs
+  $if isinstance(nargs, basestring) and nargs.isdigit():
+    $ nargs = int(nargs)
   $ c = (input.attrs.get('class') if input.attrs.get('class') else 'base')
-  $ option_checkbox = input.disposition == "optional" and nargs != 0
-  $if nargs and (type(nargs) == int or nargs.isdigit()) and int(nargs) > 1:
-    $ input_count = int(nargs)
-  $else:
-    $ input_count = 1
+  $ option_checkbox = False
+  $if input.disposition == "optional":
+    $if nargs == 0:
+      $ nargs = 1
+    $else:
+      $ option_checkbox = True
+  $if type(nargs) == int:
+    $ input_fixed = True
+    $ input_count = nargs
+  $elif nargs == "+":
+    $ input_fixed = False
+    $ input_min = 1
+    $ input_max = ""
+  $elif nargs == "*":
+    $ input_fixed = False
+    $ input_min = 0
+    $ input_max = ""
+  $elif nargs == "?":
+    $ input_fixed = False
+    $ input_min = 0
+    $ input_max = 1
   <tr class="$c input">
     $if input.help:
       <th rowspan="2">
@@ -124,14 +173,22 @@ $for input in form.inputs:
       <td onclick="javascript: update_optional('$(input.id)', true);">
     $else:
       <td>
-    $for i in range(input_count):
-      $:input.render()
+    $if input_fixed:
+      $for i in range(input_count):
+        $:input.render()
+    $else:
+      <button type="button" onclick="javascript: decrease_inputs('$(input.id)_varying')">-</button>
+      <div id="$(input.id)_varying" min="$(input_min)" count="$(input_min)" max="$(input_max)" input_field="$input.render()"></div>
+      <button type="button" onclick="javascript: increase_inputs('$(input.id)_varying')">+</button>
     </td>
   </tr>
   $if input.help:
     <tr class="$c help">
-      <td colspan=2>
-        $input.help
+      $if option_checkbox:
+        <td colspan=2 onclick="javascript: update_optional('$(input.id)', true);">
+      $else:
+        <td colspan=2>
+      $input.help
       </td>
     </tr>
 <tr class="base">
