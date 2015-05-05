@@ -4,6 +4,10 @@ import sys
 import cStringIO as StringIO
 import argparse
 import collections
+try:
+  from shlex import quote
+except ImportError:
+  from pipes import quote
 
 # 3rd party
 import web
@@ -78,6 +82,7 @@ class WebuiPage(object):
         self.parsable_add_value(pos_argv, action, value)
 
     arg = pos_argv + opt_argv
+    #arg = map(quote, arg)
     print(arg)
 
     stdout = StringIO.StringIO()
@@ -90,6 +95,10 @@ class WebuiPage(object):
       if self._parsed:
         arg = self._parser.parse_args(args=arg)
       result = self._dispatch(arg)
+    except:
+      old_stderr.write(stderr.getvalue())
+      old_stdout.write(stdout.getvalue())
+      raise
     finally:
       if old_stderr:
         sys.stderr = old_stderr
@@ -152,6 +161,12 @@ class WebuiPage(object):
   def get_subparser(self, action):
     return isinstance(action, argparse._SubParsersAction)
 
+  def get_multiple(self, action):
+    return self.multiple_args(action.nargs)
+
+  def get_choices(self, action):
+    return bool(action.choices)
+
   def filter_input_object(self, action):
     if isinstance(action, argparse._VersionAction):
       return True
@@ -168,13 +183,12 @@ class WebuiPage(object):
 
     input_type = web.form.Textbox
 
-    if action.choices:
+    if self.get_choices(action):
       input_type = web.form.Dropdown
       input_parameters['args'] = [choice for choice in action.choices]
-      if action.nargs:
-        if action.nargs == '*' or action.nargs == '+' or (action.nargs.isdigit() and int(action.nargs) > 1):
-          input_parameters['multiple'] = 'multiple'
-          input_parameters['size'] = 4
+      if self.get_multiple(action):
+        input_parameters['multiple'] = 'multiple'
+        input_parameters['size'] = 4
     elif isinstance(action, (argparse._StoreTrueAction, argparse._StoreFalseAction, argparse._StoreConstAction)):
       input_type = web.form.Checkbox
       input_parameters['checked'] = True if action.default else False
@@ -202,6 +216,7 @@ class WebuiPage(object):
     input_object.help = self.get_help(action)
     input_object.disposition = self.get_disposition(action)
     input_object.subparser = self.get_subparser(action)
+    input_object.choices = self.get_choices(action)
 
     return input_object
 

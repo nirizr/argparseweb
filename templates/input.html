@@ -44,37 +44,6 @@ $def with (form)
     update_optionals();
   }
 
-  function decrease_inputs(div_id)
-  {
-    div = document.getElementById(div_id);
-
-    count = parseInt(div.getAttribute('count'));
-    min = parseInt(div.getAttribute('min'));
-    if (count <= min)
-      return;
-
-    div.removeChild(div.lastChild);
-
-    div.setAttribute('count', count - 1);
-  }
-
-  function increase_inputs(div_id)
-  {
-    div = document.getElementById(div_id);
-
-    count = parseInt(div.getAttribute('count'));
-    max = parseInt(div.getAttribute('max'));
-    if (count >= max)
-      return;
-
-    input = div.getAttribute('input_field');
-    tmp_div = document.createElement('div');
-    tmp_div.innerHTML = input;
-    div.appendChild(tmp_div.firstChild);
-
-    div.setAttribute('count', count + 1);
-  }
-
   function update_optional(optional_id, force_check)
   {
     checkbox=document.getElementById(optional_id+'_checkbox')
@@ -113,6 +82,38 @@ $def with (form)
         update_show(document.getElementsByName('$input.name')[0]);
     update_optionals();
   }
+
+  function decrease_inputs(div_id)
+  {
+    div = document.getElementById(div_id);
+
+    count = parseInt(div.getAttribute('count'));
+    min = parseInt(div.getAttribute('min'));
+    if (count <= min)
+      return;
+
+    div.removeChild(div.lastChild);
+
+    div.setAttribute('count', count - 1);
+  }
+
+  function increase_inputs(div_id)
+  {
+    div = document.getElementById(div_id);
+
+    count = parseInt(div.getAttribute('count'));
+    max = parseInt(div.getAttribute('max'));
+    if (count >= max)
+      return;
+
+    input = div.getAttribute('input_field');
+    tmp_div = document.createElement('div');
+    tmp_div.innerHTML = input;
+    div.appendChild(tmp_div.firstChild);
+
+    div.setAttribute('count', count + 1);
+  }
+
   </script>
   <style type="text/css">
   table tr { display:none; }
@@ -145,6 +146,8 @@ $for input in form.inputs:
       $ nargs = 1
     $else:
       $ option_checkbox = True
+  $if input.choices:
+    $ nargs = 1
   $if type(nargs) == int:
     $ input_fixed = True
     $ input_count = nargs
