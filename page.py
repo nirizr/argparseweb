@@ -85,6 +85,9 @@ class WebuiPage(object):
     #arg = map(quote, arg)
     print(arg)
 
+    web.header('Content-Type', 'text/html')
+    web.header('Content-disposition', 'attachment; filename=result.txt')
+
     stdout = StringIO.StringIO()
     stderr = StringIO.StringIO()
     old_stderr = None
@@ -104,7 +107,6 @@ class WebuiPage(object):
         sys.stderr = old_stderr
       if old_stdout:
         sys.stdout = old_stdout
-    print(stderr.getvalue())
 
     return "Running: {}\nErrors: {}\nResult: {}\nOutput:\n{}".format(arg, stderr.getvalue(), result, stdout.getvalue())
 
