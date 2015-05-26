@@ -86,7 +86,7 @@ class WebuiPage(object):
     print(arg)
 
     web.header('Content-Type', 'text/html')
-    web.header('Content-disposition', 'attachment; filename=result.txt')
+    web.header('Content-disposition', 'attachment; filename=result_{}.txt'.format(" ".join(arg)))
 
     stdout = StringIO.StringIO()
     stderr = StringIO.StringIO()
