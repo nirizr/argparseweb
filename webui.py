@@ -12,7 +12,6 @@ class Webui(object):
     return ('/', 'index')
 
   def app(self, dispatch, parsed):
-    print(dispatch, parsed)
     class WebuiPageWrapper(page.WebuiPage):
       _parser = self._parser
       _dispatch = dispatch
