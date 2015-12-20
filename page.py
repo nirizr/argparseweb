@@ -1,7 +1,7 @@
 # builtin
 import os
 import sys
-import cStringIO as StringIO
+import StringIO
 import argparse
 import collections
 try:
@@ -108,7 +108,7 @@ class WebuiPage(object):
       if old_stdout:
         sys.stdout = old_stdout
 
-    return "Running: {}\nErrors: {}\nResult: {}\nOutput:\n{}".format(arg, stderr.getvalue(), result, stdout.getvalue())
+    return u"Running: {}\nErrors: {}\nResult: {}\nOutput:\n{}".format(arg, stderr.getvalue(), result, stdout.getvalue())
 
 #class WebuiParser(argh.ArghParser):
 #  def __init__(self, *args, **kwargs):
@@ -207,7 +207,7 @@ class WebuiPage(object):
       # if optional argument may be present with either 1 or no parameters, the default shifts
       # to being the no parameter's value. this is mearly to properly display actual values to the user
       if action.nargs == '?':
-        ipnut_parameters['value'] = action.const
+        input_parameters['value'] = action.const
       
     # TODO: support these actions: append, append_const, count
     self._actions[self.get_id(action, prefix)] = action
