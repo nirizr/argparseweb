@@ -99,9 +99,10 @@ class WebuiPage(object):
         arg = self._parser.parse_args(args=arg)
       result = self._dispatch(arg)
     except:
+      import traceback
+      result = traceback.format_exc()
       old_stderr.write(stderr.getvalue())
       old_stdout.write(stdout.getvalue())
-      raise
     finally:
       if old_stderr:
         sys.stderr = old_stderr
