@@ -24,9 +24,7 @@ For debugging like setup you'll need (but since it's used for internal tools, th
 
 ### Basic examples ###
 This example will set up an http server, get one valid input, tear the http server down, print a welcoming message to stdout and exit:
-```
-#!python
-
+```python
 def main():
   parser = argparse.ArgumentParser()
 
@@ -41,8 +39,7 @@ if __name__ == "__main__":
 ```
 
 This example will also run until stopped, printing a welcoming message for every valid input:
-```
-#!python
+```python
 def main():
   parser = argparse.ArgumentParser()
 
@@ -57,8 +54,7 @@ if __name__ == "__main__":
 ```
 
 This example will print the welcoming message in the http response, sending it back to the user:
-```
-#!python
+```python
 def welcome(opts):
   print("Hello {name},\nthis is a simple example.".format(name=opts.name))
 
@@ -85,8 +81,7 @@ This snippet includes three modes of operation for the webui utility:
 3. exposing an `application` global object that supports the wsgi interface. once you point a browser with correct wsgi configuration (was a bit of a pain for me first time) it'll work like magic :)
 
 myapp.py:
-```
-#!python
+```python
 def get_parser():
   """Generate generic argument parser"""
   cmd_parser = argh.ArghParser()
@@ -136,8 +131,7 @@ else:
   wsgi()
 ```
 index.wsgi:
-```
-#!python
+```python
 # TODO: replace with your application path
 # i found now way to get it automatically in wsgi :/
 APP_DIR = '/var/www/myapp'
