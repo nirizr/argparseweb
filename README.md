@@ -1,3 +1,6 @@
+
+[![Version Status][v-image]][pypi-url] 
+
 # README #
 
 This web.py based simple module allows you to automatically set up a simple HTTP web server out of advanced `argparse.ArgumentParser` objects and similar (`argh.ArgumentParser`) ones.
@@ -154,3 +157,8 @@ Done:
 
 * some code reordering is needed (split template to another file - it's grown quite big, handle action parameters better - shouldn't pass everything as html attributes although it's comfortable)
 * smoother integration into existing code.
+
+[v-image]: https://img.shields.io/pypi/v/argparseweb.svg
+[dm-image]: https://img.shields.io/pypi/dm/argparseweb.svg
+
+[pypi-url]: https://pypi.python.org/pypi/argparseweb/
