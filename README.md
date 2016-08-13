@@ -34,7 +34,7 @@ def main():
   parser.add_argument("name", default="Anonymous")
 
   # previously opts = parser.parse_args()
-  opts = webui.Webui(parser).getone():
+  opts = webui.Webui(parser).getone()
   print("Hello {name},\nthis is a simple example.".format(name=opts.name))
 
 if __name__ == "__main__":
