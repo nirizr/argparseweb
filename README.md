@@ -25,9 +25,16 @@ For debugging like setup you'll need (but since it's used for internal tools, th
 
 `get()` and `getone()` wrap the `dispatch()` method and yield results as they are submitted in the web form, providing an interface that resembles the `parse_args()` method.
 
+### Dependencies ###
+
+`argparseweb` requires `web.py` to be available. You can install it (check for the latest version) with: `pip install web.py`
+
 ### Basic examples ###
 This example will set up an http server, get one valid input, tear the http server down, print a welcoming message to stdout and exit:
 ```python
+import argparse
+from argparseweb import *
+
 def main():
   parser = argparse.ArgumentParser()
 
@@ -43,6 +50,9 @@ if __name__ == "__main__":
 
 This example will also run until stopped, printing a welcoming message for every valid input:
 ```python
+import argparse
+from argparseweb import *
+
 def main():
   parser = argparse.ArgumentParser()
 
@@ -58,6 +68,9 @@ if __name__ == "__main__":
 
 This example will print the welcoming message in the http response, sending it back to the user:
 ```python
+import argparse
+from argparseweb import *
+
 def welcome(opts):
   print("Hello {name},\nthis is a simple example.".format(name=opts.name))
 
@@ -85,6 +98,9 @@ This snippet includes three modes of operation for the webui utility:
 
 myapp.py:
 ```python
+import argparse
+from argparseweb import *
+
 def get_parser():
   """Generate generic argument parser"""
   cmd_parser = argh.ArghParser()
