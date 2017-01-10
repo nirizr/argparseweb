@@ -4,6 +4,7 @@ import page
 
 import multiprocessing
 
+
 class Webui(object):
   def __init__(self, parser):
     self._parser = parser
@@ -48,7 +49,7 @@ class Webui(object):
     #   if count is True, loop forever
     while count:
       yield results.get()
-      
+
       if type(count) == int:
         count -= 1
 

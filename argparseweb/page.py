@@ -4,20 +4,19 @@ import sys
 import StringIO
 import argparse
 import collections
-try:
-  from shlex import quote
-except ImportError:
-  from pipes import quote
 
 # 3rd party
 import web
-import argh
+
 
 class WebuiPage(object):
   _parser = None
   _dispatch = None
   _parsed = True
-  _form_template = web.template.frender(os.path.join(os.path.dirname(__file__), "templates/input.html"), globals={'type': type, 'basestring': basestring})
+  _form_template = web.template.frender(os.path.join(os.path.dirname(__file__),
+                                        "templates/input.html"),
+                                        globals={'type': type,
+                                                 'basestring': basestring})
 
   def __init__(self):
     self._actions = collections.OrderedDict()
@@ -48,7 +47,7 @@ class WebuiPage(object):
 
   def get_input(self, form):
     for action_id, action in self._actions.items():
-      if not action_id in form.value:
+      if action_id not in form.value:
         continue
 
       value = form.d[action_id]
@@ -82,11 +81,11 @@ class WebuiPage(object):
         self.parsable_add_value(pos_argv, action, value)
 
     arg = pos_argv + opt_argv
-    #arg = map(quote, arg)
     print(arg)
 
     web.header('Content-Type', 'text/html')
-    web.header('Content-disposition', 'attachment; filename="result_{}.txt"'.format(" ".join(arg)))
+    content = 'attachment; filename="result_{}.txt"'.format(" ".join(arg))
+    web.header('Content-disposition', content)
 
     stdout = StringIO.StringIO()
     stderr = StringIO.StringIO()
@@ -111,11 +110,6 @@ class WebuiPage(object):
 
     return u"Running: {}\nErrors: {}\nResult: {}\nOutput:\n{}".format(arg, stderr.getvalue(), result, stdout.getvalue())
 
-#class WebuiParser(argh.ArghParser):
-#  def __init__(self, *args, **kwargs):
-#    super(WebuiParser, self).__init__(*args, **kwargs)
-#    self.webui = Webui(self)
-
   def get_base_id(self, action):
     base_id = action.dest
     for opt_name in action.option_strings:
@@ -129,7 +123,7 @@ class WebuiPage(object):
     return "_".join(prefix) if prefix else ""
 
   def get_id(self, action, prefix):
-    return self.get_class(prefix+[self.get_base_id(action)])
+    return self.get_class(prefix + [self.get_base_id(action)])
 
   def get_name(self, action):
     return self.get_base_id(action)
@@ -209,7 +203,7 @@ class WebuiPage(object):
       # to being the no parameter's value. this is mearly to properly display actual values to the user
       if action.nargs == '?':
         input_parameters['value'] = action.const
-      
+
     # TODO: support these actions: append, append_const, count
     self._actions[self.get_id(action, prefix)] = action
     input_object = input_type(**input_parameters)
@@ -231,7 +225,6 @@ class WebuiPage(object):
 
     group_actions = [group_actions
                      for group_actions in parser._mutually_exclusive_groups]
-    subparser_actions = parser._subparsers
     actions = [action
                for action in parser._actions
                if action not in group_actions]
