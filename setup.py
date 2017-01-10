@@ -14,6 +14,7 @@ def get_version():
 setup(
   name = 'argparseweb',
   packages = ['argparseweb'],
+  package_data = {'argparseweb': ['templates/*.html']},
   version = get_version(),
   description = 'Automatic exposure of argparse-compatible scripts as a web interface',
   long_description=(open('README.md').read() if exists('README.md') else ''),
