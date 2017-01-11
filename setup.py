@@ -4,7 +4,7 @@ from os.path import exists
 from setuptools import setup
 
 def get_requirements():
-  return open('./requirements.txt').readlines()
+  return open('./argparseweb/requirements.txt').readlines()
 
 def get_version():
   context = {}
@@ -14,6 +14,8 @@ def get_version():
 setup(
   name = 'argparseweb',
   packages = ['argparseweb'],
+  package_data = {'argparseweb': ['templates/*.html',
+                                  'requirements.txt']},
   version = get_version(),
   description = 'Automatic exposure of argparse-compatible scripts as a web interface',
   long_description=(open('README.md').read() if exists('README.md') else ''),
