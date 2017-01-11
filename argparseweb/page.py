@@ -147,7 +147,7 @@ class WebuiPage(object):
   def get_help(self, action):
     if not action.help:
       return ""
-    return action.help % action.__dict__
+    return action.help
 
   def get_disposition(self, action):
     if len(action.option_strings):
