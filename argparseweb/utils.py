@@ -1,5 +1,5 @@
 
-# util
+
 class ReloadedIterable:
   """This is an automatically reloaded iterable object.
   Every time it starts an iteration it'll call the specified function
